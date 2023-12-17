@@ -56,16 +56,13 @@ const char *welcome =
             
 //----------------------COMMANDE PING----------------------------------------------------------//
         if (strncmp(buffer, "PING", 4) == 0) {
-            // Si la commande commence par "PING"
+            // Premier cas : PING
             if ((buffer[4] == '\0') || (buffer[4] == '\n')) {
-            // Envoyer la réponse 'PONG' si la commande est juste "PING"
             const char *response = "PONG\n";
             write(client_fd, response, strlen(response));
-
+            // Second cas : PING <text> 
             } else if (buffer[4] == ' ') {
-                // Si la commande commence par "PING " avec un message
-                // Envoyer le message comme réponse
-                const char *response = &buffer[5]; // Ignorer "PING " et envoyer le reste comme réponse
+                const char *response = &buffer[5]; 
                 write(client_fd, response, strlen(response));
             } else {
                 // Commande inconnue
@@ -79,8 +76,8 @@ const char *welcome =
                 if(sscanf(&buffer[4], "%127s", key) == 1){
                    const char *value = get(ctx->hashMap, key);
                    if(value != NULL){
+
                     // Clé trouvée
-                    
                     write(client_fd, value,strlen(value));
                    } else {
                     // Clé inéxistante
@@ -114,7 +111,7 @@ const char *welcome =
                     write(client_fd, response, strlen(response));
                 }
             } else {
-                // Commande mal formaté
+                // Format de la commande Invalide
                 const char *response = "Format invalide pour la commande SET\n";
                 write(client_fd, response, strlen(response));
             }
@@ -123,14 +120,16 @@ const char *welcome =
         } else if (strncmp(buffer, "DEL", 3) == 0) {
             if (buffer[3] == ' ') {
                 char keys[128];
+                // Lecture de tous les élements séparé par un ' ' 
                 if (sscanf(&buffer[4], "%127[^\n]", keys) == 1) {
                     char *token = strtok(keys, " ");
                     int deletedCount = 0;
-
+                    // On itére sur les éléments 
                     while (token != NULL) {
                         const char *value = get(ctx->hashMap, token);
                         if (value != NULL) {
                             del(ctx->hashMap, token);
+                            // On incrémente le compteur si la suppression à bien eu lieu
                             deletedCount++;
                         }
                         token = strtok(NULL, " ");
@@ -149,9 +148,9 @@ const char *welcome =
 //--------------------COMMANDE KEYS----------------------------------------------------------//
         } else if(strncmp(buffer,"KEYS",4) == 0) {
             char result[1024] ;
+
             // Récuperation de toute les clés
             getKeys(ctx->hashMap, result,sizeof(result));
-
             write(client_fd,result,strlen(result));
 
 
@@ -160,7 +159,6 @@ const char *welcome =
             char result[1024] ;
             // Récupération des éléments de la liste
             LKEYS(ctx->list, result,sizeof(result));
-
             write(client_fd,result,strlen(result));
 
 
@@ -169,16 +167,18 @@ const char *welcome =
             if(buffer[5]==' '){
                     char value[256];
                     int pushedValues =0 ;
+                    // Lecture de tous les éléments séparé par un ' '
                     if (sscanf(&buffer[6], "%127[^\n]", value) == 1) {
                     char *token = strtok(value, " ");
 
                     while (token != NULL) {
                         rPush(ctx->list, token);
                         token = strtok(NULL, " ");
+                        // On incrémente le compteur si l'insertion a bien eu lieu
                         pushedValues++;
                     }
 
-                // Envoyer la réponse indiquant le nombre de clés supprimées
+                // Envoyer la réponse indiquant le nombre d'éléments ajoutés
                 char response[128];
                 snprintf(response, sizeof(response), "integer (%d)", pushedValues);
                 write(client_fd, response, strlen(response));
@@ -189,6 +189,34 @@ const char *welcome =
                     write(client_fd, response, strlen(response));
                 }
 //--------------------RPOP---------------------------------//
+        }else if(strncmp(buffer,"LPUSH", 5) == 0){
+            if(buffer[5]==' '){
+                    char value[256];
+                    int pushedValues = 0 ;
+                    // Lecture de tous les éléments séparé par un ' '
+                    if (sscanf(&buffer[6], "%127[^\n]", value) == 1) {
+                    char *token = strtok(value, " ");
+
+                    while (token != NULL) {
+                        lPush(ctx->list, token);
+                        token = strtok(NULL, " ");
+                        // On incrémente le compteur si l'insertion a bien eu lieu
+                        pushedValues++;
+                    }
+
+                // Envoyer la réponse indiquant le nombre d'éléments ajoutés
+                char response[128];
+                snprintf(response, sizeof(response), "integer (%d)", pushedValues);
+                write(client_fd, response, strlen(response));
+                } 
+        
+
+            } else {
+                const char* response = "Format invalide pour la commande RPUSH\n";
+                write(client_fd, response, strlen(response));
+              
+            }
+
         }else if(strncmp(buffer,"RPOP",4) == 0){
             char value[128];
             if((rPop(ctx->list,value)) != NULL){
@@ -384,7 +412,7 @@ const char *welcome =
         }else if(strncmp(buffer,"HELP",4) == 0){
            if((buffer[4] == '\0') || (buffer[4] == '\n')){
            const char *response = "Vous êtes sur un serveur qui implemente une partie des commandes du protocol REDIS tapez HELP <COMMAND> pour obtenir de l'aide supplémentaire  \n"
-           "Voici la liste des commandes implementée : \nPING\nECHO\nSET\nGET\nDEL\nAPPEND\nEXISTS\nKEYS\nSTRLEN\nMGET\nMSET\nRANDOMKEY\nLKEYS\nRPUSH\nRPOP\nSAVE\nLOAD\nQUIT\n" ;
+           "Voici la liste des commandes implementée : \n1) PING\n2) ECHO\n3) SET\n4) GET\n5) DEL\n6) APPEND\n7) EXISTS\n8) KEYS\n9) STRLEN\n10) MGET\n11) MSET\n12) RANDOMKEY\n13) LKEYS\n14) RPUSH\n15) RPOP\n16) SAVE\n17) LOAD\n18) QUIT\n" ;
            write(client_fd,response,strlen(response));
            } else {
                char command[128];
@@ -413,7 +441,7 @@ const char *welcome =
                        write(client_fd, response,strlen(response));
                    }else if(strcmp(command, "EXISTS") == 0){
                        const char *response = "Renvoie si la clé existe. L'utilisateur doit être conscient que si la même clé existante est mentionnée plusieurs" 
-                       "fois dans les arguments, elle sera comptée plusieurs fois. Donc, si somekey existe, EXISTS somekey somekey renverra 2. \n";
+                       "fois dans les arguments, elle sera comptée plusieurs fois. Donc, si 'somekey' existe, EXISTS somekey somekey renverra 2. \n";
                        write(client_fd, response,strlen(response));
                    }else if(strcmp(command, "KEYS") == 0){
                        const char *response = "Retourne toutes les clés \n";
@@ -448,10 +476,13 @@ const char *welcome =
                        const char *response = "Affiche tous les élements de la liste";
                        write(client_fd,response,strlen(response));
                    }else if (strncmp(command,"RPUSH",5)== 0){
-                       const char *response = "Permet ";
+                       const char *response = "Permet d'insérer les élements à la fin de la liste succesivement\n ";
                        write(client_fd,response,strlen(response));
                    }else if(strncmp(command,"RPOP",4) == 0){
-                       const char *response = "";
+                       const char *response = "Permet de récupérer le dernier élement de la liste";
+                       write(client_fd,response,strlen(response));
+                   }else if(strncmp(command,"LPUSH",5)== 0){
+                       const char *response = "Permet de récupérer le premier élement de la liste";
                        write(client_fd,response,strlen(response));
                    }else{
                        const char *response = "format invalide \n";
@@ -482,7 +513,10 @@ const char *welcome =
 }
 
 int main(int argc, char const *argv[])
-{
+{   
+    if (argc < 2)
+    return printf("usage: %s [PORT] \n", argv[0]), 1;
+
 
     //Initialisation de la table de Hachage
     struct HashMap hashMap;

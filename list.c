@@ -28,6 +28,29 @@ void rPush(List* list, const char* element){
     }
 }
 
+// Ajouter un élement au début de la liste
+void lPush(List *list, const char* element) {
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    if (newNode == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+    strncpy(newNode->data, element, sizeof(newNode->data) - 1);
+    newNode->data[sizeof(newNode->data) - 1] = '\0';
+    newNode->next = NULL;
+
+    if (list->head == NULL) {
+        // La liste est vide
+        list->head = newNode;
+        list->tail = newNode;
+    } else {
+        // Ajouter le nouvel élément au début de la liste
+        newNode->next = list->head;
+        list->head = newNode;
+    }
+
+}
+
 // Afficher les elements de la liste
 void LKEYS(List* list, char* result, size_t resultSize){
     result[0] = '\0' ;
