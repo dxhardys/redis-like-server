@@ -27,7 +27,7 @@ void initList(List* list); // Initialisation de la liste
 void rPush(List* list, const char* element);// Ajouter un élément à la fin de la liste
 void lPush(List* list, const char* element);// Ajouter un élement au début de la liste
 void LKEYS(List* list, char* result, size_t resultSize); // Afficher les elements de la liste
-const char* rPop(List *list, const char* value); // Retourne l'élément à la fin de la liste
-const char* lPop(List *list, const char* value); // Retourne le premier élement de la liste
+const char* rPop(List *list, char* value); // Retourne l'élément à la fin de la liste
+const char* lPop(List *list, char* value); // Retourne le premier élement de la liste
 
 #endif

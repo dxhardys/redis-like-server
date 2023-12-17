@@ -188,7 +188,7 @@ const char *welcome =
                     const char* response = "Format invalide pour la commande RPUSH\n";
                     write(client_fd, response, strlen(response));
                 }
-//--------------------RPOP---------------------------------//
+//--------------------LPUSH---------------------------------//
         }else if(strncmp(buffer,"LPUSH", 5) == 0){
             if(buffer[5]==' '){
                     char value[256];
@@ -216,7 +216,7 @@ const char *welcome =
                 write(client_fd, response, strlen(response));
               
             }
-
+//------------------------------------RPOP------------------------------//
         }else if(strncmp(buffer,"RPOP",4) == 0){
             char value[128];
             if((rPop(ctx->list,value)) != NULL){
@@ -229,9 +229,19 @@ const char *welcome =
             }
 
 
+//---------------------COMMANDE LPOP----------------------------------------------------------//
+        }else if(strncmp(buffer,"LPOP",4) == 0){
+            char value[128];
+            if((lPop(ctx->list,value)) != NULL){
+                const char *response = value ;
+                write(client_fd,response,strlen(response));
 
-//---------------------COMMANDE APPEND----------------------------------------------------------//
-        } else if(strncmp(buffer,"APPEND", 6) == 0){
+            }else{
+                const char *response = "La liste est vide" ;
+                write(client_fd,response,strlen(response));
+            }        
+//---------------------COMMANDE APPEND----------------------------------------------------------//            
+        }else if(strncmp(buffer,"APPEND", 6) == 0){
             if(buffer[6] == ' '){
                 char key[128];
                 char text[128];
@@ -412,7 +422,7 @@ const char *welcome =
         }else if(strncmp(buffer,"HELP",4) == 0){
            if((buffer[4] == '\0') || (buffer[4] == '\n')){
            const char *response = "Vous êtes sur un serveur qui implemente une partie des commandes du protocol REDIS tapez HELP <COMMAND> pour obtenir de l'aide supplémentaire  \n"
-           "Voici la liste des commandes implementée : \n1) PING\n2) ECHO\n3) SET\n4) GET\n5) DEL\n6) APPEND\n7) EXISTS\n8) KEYS\n9) STRLEN\n10) MGET\n11) MSET\n12) RANDOMKEY\n13) LKEYS\n14) RPUSH\n15) RPOP\n16) SAVE\n17) LOAD\n18) QUIT\n" ;
+           "Voici la liste des commandes implementée : \n1) PING\n2) ECHO\n3) SET\n4) GET\n5) DEL\n6) APPEND\n7) EXISTS\n8) KEYS\n9) STRLEN\n10) MGET\n11) MSET\n12) RANDOMKEY\n13) LKEYS\n14) RPUSH\n15) RPOP\n16) LPUSH\n17) LPOP\n18) SAVE\n19) LOAD\n 20)QUIT" ;
            write(client_fd,response,strlen(response));
            } else {
                char command[128];
@@ -467,22 +477,25 @@ const char *welcome =
                        const char *response = "Renvoie une clé aléatoire de la base de donnée\n" ;
                        write(client_fd,response,strlen(response));
                    }else if(strcmp(command,"QUIT") == 0){
-                       const char *response = "Ferme la connexion avec le serveur";
+                       const char *response = "Ferme la connexion avec le serveur\n";
                        write(client_fd,response,strlen(response));
                    }else if(strcmp(command,"MGET") == 0 ){
                        const char *response = "Permet de récuperer plusieurs clés à la fois : GET <key1> <key2> <key3> \n";
                        write(client_fd,response,strlen(response));
                    }else if (strncmp(command,"LKEYS",5)== 0){
-                       const char *response = "Affiche tous les élements de la liste";
+                       const char *response = "Affiche tous les élements de la liste\n";
                        write(client_fd,response,strlen(response));
                    }else if (strncmp(command,"RPUSH",5)== 0){
                        const char *response = "Permet d'insérer les élements à la fin de la liste succesivement\n ";
                        write(client_fd,response,strlen(response));
                    }else if(strncmp(command,"RPOP",4) == 0){
-                       const char *response = "Permet de récupérer le dernier élement de la liste";
+                       const char *response = "Permet de récupérer le dernier élement de la liste\n";
                        write(client_fd,response,strlen(response));
                    }else if(strncmp(command,"LPUSH",5)== 0){
-                       const char *response = "Permet de récupérer le premier élement de la liste";
+                       const char *response = "Permet d'insérer les élement au début de la liste succesivement\n";
+                       write(client_fd,response,strlen(response));
+                   }else if(strncmp(command,"LPOP",4) == 0){
+                       const char *response = "Permet de récupérer le premier élement de la liste\n";
                        write(client_fd,response,strlen(response));
                    }else{
                        const char *response = "format invalide \n";

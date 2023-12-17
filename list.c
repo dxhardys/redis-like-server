@@ -64,15 +64,30 @@ void LKEYS(List* list, char* result, size_t resultSize){
     
 }
 
-const char* rPop(List *list, const char* value){
-    if(list->head == NULL){
-        return NULL ;
+const char* rPop(List* list, char* value) {
+    if (list->head == NULL) {
+        // La liste est vide
+        return NULL;
     }
-    Node *current = list->head;
-    while (current->next != NULL){
+
+    Node* current = list->head;
+
+    // Trouver le dernier élément
+    while (current->next != NULL) {
         current = current->next;
     }
 
-    return current->data;
-    
+    // Copier la valeur du dernier élément
+    strncpy(value, current->data, 127);
+    return value;
+}
+
+const char* lPop(List *list, char* value){
+    if(list->head != NULL){
+        strncpy(value, list->head->data,127) ;
+        return value ;
+    }else {
+        // Liste vide
+        return NULL ;
+    }
 }
