@@ -5,6 +5,7 @@ Done as a project for "Architecture Interne des Systèmes d'Exploitation" - CHPS
 
 
 make 
+
 ./server [PORT]
 
 use netcat to locally connect to the server 
