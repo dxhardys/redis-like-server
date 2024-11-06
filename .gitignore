@@ -1,0 +1,5 @@
+#ignore all binaries
+*.o
+
+#ignore all json saving files 
+*.json

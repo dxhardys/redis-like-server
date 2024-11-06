@@ -1,7 +1,7 @@
 #ifndef HASHMAP_H_
 #define HASHMAP_H_
 
-#define TABLE_SIZE 100
+#define TABLE_SIZE 10000
 
 #include <stdio.h>
 #include <stdlib.h>
