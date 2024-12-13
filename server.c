@@ -8,8 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "list.h"
-#include "hashmap.h"
+#include "include/list.h"
+#include "include/hashmap.h"
 
 
 
