@@ -1,7 +1,6 @@
 #include "../include/list.h"
 
 
-
 // Initialisation de la liste
 void initList(List* list){
     list->head = NULL ;
